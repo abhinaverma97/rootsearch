@@ -1,0 +1,42 @@
+# Basics
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.pytest_cache/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+.pnpm-debug.log
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Application Data & Secrets
+*.env
+*.env.*
+!.env.example
+src/data/
+web/data/
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker
+docker-compose.override.yml
+
+# IDEs
+.vscode/
+.idea/

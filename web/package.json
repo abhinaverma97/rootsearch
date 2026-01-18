@@ -1,0 +1,35 @@
+{
+    "name": "rootsearch-web",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "better-sqlite3": "^12.6.0",
+        "clsx": "^2.1.1",
+        "framer-motion": "^12.26.1",
+        "jose": "^6.1.3",
+        "lucide-react": "^0.562.0",
+        "next": "13.4.10",
+        "next-auth": "^4.24.13",
+        "react": "18.2.0",
+        "react-dom": "18.2.0",
+        "tailwind-merge": "^3.4.0",
+        "use-debounce": "^10.1.0"
+    },
+    "devDependencies": {
+        "@types/better-sqlite3": "^7.6.13",
+        "@types/node": "25.0.6",
+        "@types/react": "19.2.8",
+        "autoprefixer": "^10.4.0",
+        "eslint": "9.39.2",
+        "eslint-config-next": "16.1.2",
+        "postcss": "^8.4.0",
+        "tailwindcss": "^3.4.0",
+        "typescript": "^5.1.6"
+    }
+}

@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --background: 5 5 5;
+    /* #050505 */
+    --foreground: 255 255 255;
+    --grid-line: 255 255 255;
+
+    /* Design System: Background Levels */
+    --bg-base: 5 5 5;
+    /* #050505 - Page backgrounds */
+    --bg-surface: 10 10 11;
+    /* #0A0A0B - Panels, sidebars */
+    --bg-elevated: 15 15 16;
+    /* #0F0F10 - Cards, metric boxes */
+    --bg-input: 17 17 19;
+    /* #111113 - Inputs, dropdowns */
+}
+
+html,
+body {
+    height: 100%;
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
+}
+
+body {
+    @apply antialiased selection:bg-violet-500/30 selection:text-violet-200;
+}
+
+/* Utilities */
+.glass-panel {
+    @apply bg-zinc-900/50 backdrop-blur-xl border border-white/10;
+}
+
+.text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60;
+}
+
+/* Scrollbar Utility - Single Definition */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

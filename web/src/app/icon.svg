@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <style>
+    @media (prefers-color-scheme: light) {
+      text { fill: black; }
+    }
+    @media (prefers-color-scheme: dark) {
+      text { fill: white; }
+    }
+  </style>
+  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-weight="bold" font-size="26" letter-spacing="-2" fill="white">rs</text>
+</svg>
