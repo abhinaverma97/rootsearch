@@ -308,7 +308,7 @@ def advanced_search(
         # only text match. Supporting board filter in live search would require DB update.
         # For now, we search all.
         
-        results, total = db.search(q, limit=limit, offset=offset)
+        results, total, aggregations = db.search(q, limit=limit, offset=offset)
         
         return {
             "results": results,
@@ -318,7 +318,7 @@ def advanced_search(
                 "limit": limit,
                 "mode": "live"
             },
-            "aggregations": {}
+            "aggregations": aggregations
         }
 
 @app.get("/threads/{board}/{thread_id}")

@@ -10,6 +10,7 @@ import TrackingPreview from "../components/landing/TrackingPreview";
 import Navbar from "../components/landing/Navbar";
 import PricingSection from "../components/landing/PricingSection";
 import UpcomingIntegrations from "../components/landing/UpcomingIntegrations";
+import Footer from "../components/landing/Footer";
 
 export default function Home() {
     const [stats, setStats] = useState<{ posts: number, boards: number } | null>(null);
@@ -43,9 +44,7 @@ export default function Home() {
             <UpcomingIntegrations />
 
             {/* Footer */}
-            <footer className="py-12 border-t border-white/5 text-center text-zinc-600 text-sm">
-                <p>&copy; {new Date().getFullYear()} RootSearch. All rights reserved.</p>
-            </footer>
+            <Footer />
         </div>
     );
 }

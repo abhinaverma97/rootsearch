@@ -131,6 +131,7 @@ export default function QuickGlance({ opportunity, onClose, isSavedView = false,
                         else if (intent === "Emerging Trends") {
                             // Heading is emerging_trend
                             if (opportunity.target_audience) sections.push({ label: "Driving the Trend", value: opportunity.target_audience });
+                            if (opportunity.product_concept) sections.push({ label: "Product Opportunity", value: opportunity.product_concept });
                         }
                         else if (intent === "Ideas") {
                             // Heading is product_concept

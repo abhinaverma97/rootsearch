@@ -35,7 +35,7 @@ def analyze_data(input_data, api_key, source_boards=None):
        - Use when: User is venting, complaining, or expressing frustration.
        - core_pain: REQUIRED (Deep description of the frustration).
        - target_audience: REQUIRED (Who is angry?).
-       - solution: REQUIRED (Suggested approach to solve the pain).
+       - solution: REQUIRED (what solution can be build to solve the problem).
        - product_concept: NULL.
        - emerging_trend: NULL.
 
@@ -50,8 +50,8 @@ def analyze_data(input_data, api_key, source_boards=None):
     3. "Advice & Solution Requests"
        - Use when: User asks "How do I...?" or "Is there a tool for...?".
        - core_pain: REQUIRED (The problem they can't solve).
-       - ticket_audience: REQUIRED (Who is asking?).
-       - solution: REQUIRED.
+       - target_audience: REQUIRED (Who is asking?).
+       - solution: REQUIRED (what solution can be build to solve the problem).
        - product_concept: NULL.
        - emerging_trend: NULL.
 
@@ -61,7 +61,7 @@ def analyze_data(input_data, api_key, source_boards=None):
        - target_audience: REQUIRED (Who is driving the trend?).
        - core_pain: NULL.
        - solution: NULL.
-       - product_concept: NULL.
+       - product_concept: REQUIRED (suggest product which can capitalize on the trend).
 
     5. "Ideas"
        - Use when: Users explicitly propose a solution or feature.
@@ -99,12 +99,13 @@ def analyze_data(input_data, api_key, source_boards=None):
           "intent_category": "Core Pains & Anger | Money Talk | Advice Requests | Emerging Trends | Ideas",
           "category": "High-level industry (e.g. Bio-hacking)",
           
-          "core_pain": "String or Null",
-          "emerging_trend": "String or Null",
-          "solution": "String or Null",
-          "product_concept": "String or Null",
+          // Field requirements vary by intent_category (see schema above):
+          "core_pain": "String or Null (Required for: Core Pains, Money Talk, Advice Requests)",
+          "emerging_trend": "String or Null (Required for: Emerging Trends)",
+          "solution": "String or Null (Required for: Core Pains, Advice Requests, Ideas)",
+          "product_concept": "String or Null (Required for: Money Talk, Emerging Trends, Ideas)",
           
-          "target_audience": "String (Required)",
+          "target_audience": "String (Always Required)",
           "market_score": 1-10 (Weighted by signal intensity),
           "complexity": "Low | Medium | High",
           "market_size": "Niche | Mid-size | Mass Market",

@@ -136,7 +136,36 @@ class ArchiveDB:
         cursor.execute(count_query, params)
         total_count = cursor.fetchone()[0]
 
-        # 2. Get Results (Optimized: Deferred Join)
+        # 2. Calculate Board Aggregations (for ALL matching results)
+        if min_timestamp:
+            agg_query = """
+                SELECT p.board, COUNT(*) as count
+                FROM posts_search ps
+                JOIN posts p ON ps.rowid = p.post_id
+                WHERE ps.comment MATCH ? AND p.timestamp > ?
+                GROUP BY p.board
+                ORDER BY count DESC
+            """
+            agg_params = [fts_keyword, min_timestamp]
+        else:
+            agg_query = """
+                SELECT p.board, COUNT(*) as count
+                FROM posts_search ps
+                JOIN posts p ON ps.rowid = p.post_id
+                WHERE ps.comment MATCH ?
+                GROUP BY p.board
+                ORDER BY count DESC
+            """
+            agg_params = [fts_keyword]
+        
+        cursor.execute(agg_query, agg_params)
+        board_counts = {row[0]: row[1] for row in cursor.fetchall()}
+        
+        aggregations = {
+            "board_counts": board_counts
+        }
+
+        # 3. Get Results (Optimized: Deferred Join)
         if min_timestamp:
             fts_query = """
                 SELECT ps.rowid 
@@ -160,11 +189,11 @@ class ArchiveDB:
         post_ids_rows = cursor.execute(fts_query, query_params).fetchall()
         
         if not post_ids_rows:
-            return [], total_count
+            return [], total_count, aggregations
             
         post_ids = [r[0] for r in post_ids_rows]
         
-        # 3. Fetch Details for these specific IDs
+        # 4. Fetch Details for these specific IDs
         placeholders = ','.join(['?'] * len(post_ids))
         details_query = f"""
             SELECT p.board, p.thread_id, p.post_id, p.comment, p.timestamp, t.subject
@@ -187,7 +216,7 @@ class ArchiveDB:
                 "subject": r[5]
             })
             
-        return results, total_count
+        return results, total_count, aggregations
 
     def get_thread(self, board, thread_id):
         cursor = self.conn.cursor()

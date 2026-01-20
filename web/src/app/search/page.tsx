@@ -153,7 +153,9 @@ export default function SearchPage() {
     useEffect(() => {
         const observer = new IntersectionObserver(
             entries => {
-                if (entries[0].isIntersecting && !loadingMore && results.length < total && (isPro || results.length < 3)) {
+                // Allow free users unlimited results in live mode, limit to 3 in analyzed mode
+                const canLoadMore = isPro || mode === 'live' || results.length < 3;
+                if (entries[0].isIntersecting && !loadingMore && results.length < total && canLoadMore) {
                     handleLoadMore();
                 }
             },
@@ -401,7 +403,7 @@ export default function SearchPage() {
                                     ))}
 
                                     {/* Infinite Scroll Trigger */}
-                                    {results.length < total && (isPro || results.length < 3) && (
+                                    {results.length < total && (isPro || mode === 'live' || results.length < 3) && (
                                         <div ref={observerTarget} className="py-8 flex justify-center w-full">
                                             {loadingMore && <Loader2 className="w-6 h-6 animate-spin text-zinc-600" />}
                                         </div>

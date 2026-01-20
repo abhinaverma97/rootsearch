@@ -49,20 +49,23 @@ export default function SearchVisualizations({ data, mode, total, aggregations }
         if (mode === 'analyzed') {
             const opps = data as Opportunity[];
 
-            // 1. Categories (Fallback to local if no aggregation)
+            // 1. Categories (Use Backend if available)
             let categories = [];
-            if (aggregations?.intent_counts) {
-                // Actually intent_counts maps to "User Intent". 
+            if (aggregations?.category_counts) {
+                const totalCats = Object.values(aggregations.category_counts).reduce((a: number, b: any) => a + b, 0);
+                categories = Object.entries(aggregations.category_counts)
+                    .map(([k, v]) => ({ label: k, value: v as number, percent: ((v as number) / totalCats) * 100 }))
+                    .sort((a, b) => b.value - a.value).slice(0, 5);
+            } else {
+                // Fallback to local computation if aggregations not available
+                const catCounts: Record<string, number> = {};
+                opps.forEach(o => {
+                    if (o.category) catCounts[o.category] = (catCounts[o.category] || 0) + 1;
+                });
+                categories = Object.entries(catCounts)
+                    .map(([k, v]) => ({ label: k, value: v, percent: (v / opps.length) * 100 }))
+                    .sort((a, b) => b.value - a.value).slice(0, 5);
             }
-
-            // Calculate local stats for Categories & Flair (since backend doesn't provide them yet)
-            const catCounts: Record<string, number> = {};
-            opps.forEach(o => {
-                if (o.category) catCounts[o.category] = (catCounts[o.category] || 0) + 1;
-            });
-            categories = Object.entries(catCounts)
-                .map(([k, v]) => ({ label: k, value: v, percent: (v / opps.length) * 100 }))
-                .sort((a, b) => b.value - a.value).slice(0, 5);
 
             // 2. Intent (Use Backend if available)
             let intents = [];
@@ -82,7 +85,7 @@ export default function SearchVisualizations({ data, mode, total, aggregations }
                     .sort((a, b) => b.value - a.value);
             }
 
-            // 3. Score Distribution (New - Backend Only)
+            // 3. Score Distribution (Backend Only)
             let scores: { label: string, value: number, percent: number }[] = [];
             if (aggregations?.score_distribution) {
                 const totalScores = Object.values(aggregations.score_distribution).reduce((a: number, b: any) => a + b, 0);
@@ -95,7 +98,7 @@ export default function SearchVisualizations({ data, mode, total, aggregations }
                 });
             }
 
-            // 4. Flair (Local Fallback)
+            // 4. Flair (Local Fallback - no backend aggregation for this yet)
             const flairCounts: Record<string, number> = {};
             opps.forEach(o => {
                 if (o.flair_type) flairCounts[o.flair_type] = (flairCounts[o.flair_type] || 0) + 1;
@@ -106,17 +109,26 @@ export default function SearchVisualizations({ data, mode, total, aggregations }
 
             return { categories, intents, flairs, scores };
         } else {
-            // Live Mode Stats
-            const posts = data;
+            // Live Mode Stats - Use Backend Aggregations
+            let boards = [];
 
-            // 1. Boards
-            const boardCounts: Record<string, number> = {};
-            posts.forEach((p: any) => {
-                if (p.board) boardCounts[p.board] = (boardCounts[p.board] || 0) + 1;
-            });
-            const boards = Object.entries(boardCounts)
-                .map(([k, v]) => ({ label: `/${k}/`, value: v, percent: (v / posts.length) * 100 }))
-                .sort((a, b) => b.value - a.value).slice(0, 8);
+            if (aggregations?.board_counts) {
+                // Use backend aggregations for ALL results
+                const totalBoards = Object.values(aggregations.board_counts).reduce((a: number, b: any) => a + b, 0);
+                boards = Object.entries(aggregations.board_counts)
+                    .map(([k, v]) => ({ label: `/${k}/`, value: v as number, percent: ((v as number) / totalBoards) * 100 }))
+                    .sort((a, b) => b.value - a.value).slice(0, 8);
+            } else {
+                // Fallback to local computation (only if aggregations not available)
+                const posts = data;
+                const boardCounts: Record<string, number> = {};
+                posts.forEach((p: any) => {
+                    if (p.board) boardCounts[p.board] = (boardCounts[p.board] || 0) + 1;
+                });
+                boards = Object.entries(boardCounts)
+                    .map(([k, v]) => ({ label: `/${k}/`, value: v, percent: (v / posts.length) * 100 }))
+                    .sort((a, b) => b.value - a.value).slice(0, 8);
+            }
 
             return { boards };
         }

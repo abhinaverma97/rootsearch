@@ -70,9 +70,13 @@ export function getUserByEmail(email: string): User | undefined {
 }
 
 export function createUser(user: Partial<User>): User {
+    // Check if user is an admin (pro access)
+    const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim());
+    const isPro = user.email ? adminEmails.includes(user.email) : false;
+
     const stmt = db.prepare(`
-        INSERT INTO users (id, email, name, image, provider, last_login)
-        VALUES (@id, @email, @name, @image, @provider, CURRENT_TIMESTAMP)
+        INSERT INTO users (id, email, name, image, provider, plan_type, last_login)
+        VALUES (@id, @email, @name, @image, @provider, @plan_type, CURRENT_TIMESTAMP)
         RETURNING *
     `);
 
@@ -81,12 +85,26 @@ export function createUser(user: Partial<User>): User {
         email: user.email,
         name: user.name,
         image: user.image,
-        provider: user.provider || 'google'
+        provider: user.provider || 'google',
+        plan_type: isPro ? 'pro' : 'free'
     }) as User;
 }
 
 export function updateUserLogin(email: string) {
-    db.prepare('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE email = ?').run(email);
+    // Check if user should be pro (admin email)
+    const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim());
+    const isPro = adminEmails.includes(email);
+
+    if (isPro) {
+        // Upgrade to pro if admin
+        db.prepare('UPDATE users SET last_login = CURRENT_TIMESTAMP, plan_type = ? WHERE email = ?').run('pro', email);
+    } else {
+        db.prepare('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE email = ?').run(email);
+    }
+}
+
+export function updateUserPlan(userId: string, planType: 'free' | 'pro' | 'enterprise') {
+    db.prepare('UPDATE users SET plan_type = ? WHERE id = ?').run(planType, userId);
 }
 
 export function getUserById(id: string): User | undefined {

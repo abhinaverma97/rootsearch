@@ -15,8 +15,11 @@ export default function UpcomingIntegrations() {
                 <h3 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-4">
                     Expanding our horizon.
                 </h3>
-                <p className="text-zinc-500 text-lg mb-12 max-w-xl mx-auto">
+                <p className="text-zinc-500 text-lg mb-2 max-w-xl mx-auto">
                     We are actively building integrations for the world's most vibrant communities.
+                </p>
+                <p className="text-zinc-400 text-sm mb-12 max-w-lg mx-auto">
+                    All integrations will be included in your Pro account when launched.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

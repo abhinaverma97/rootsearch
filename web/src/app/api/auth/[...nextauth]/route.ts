@@ -13,21 +13,27 @@ export const authOptions: NextAuthOptions = {
         async signIn({ user, account, profile }) {
             if (!user.email) return false;
 
-            const existingUser = getUserByEmail(user.email);
+            try {
+                const existingUser = getUserByEmail(user.email);
 
-            if (existingUser) {
-                updateUserLogin(user.email);
-            } else {
-                // First time login - create user
-                createUser({
-                    id: user.id,
-                    email: user.email,
-                    name: user.name || "",
-                    image: user.image || "",
-                    provider: account?.provider || "google"
-                });
+                if (existingUser) {
+                    updateUserLogin(user.email);
+                } else {
+                    // First time login - create user
+                    // Use account.providerAccountId (Google's 'sub' claim) as stable user ID
+                    createUser({
+                        id: account?.providerAccountId || user.email, // Fallback to email if no provider ID
+                        email: user.email,
+                        name: user.name || "",
+                        image: user.image || "",
+                        provider: account?.provider || "google"
+                    });
+                }
+                return true;
+            } catch (error) {
+                console.error("Sign in error:", error);
+                return false;
             }
-            return true;
         },
         async session({ session, token }) {
             // Attach user details from DB to session

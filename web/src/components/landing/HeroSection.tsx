@@ -48,15 +48,24 @@ export default function HeroSection({ stats }: { stats: { posts: number, boards:
                             </Link>
                         </div>
                     ) : (
-                        <button
-                            onClick={() => signIn('google', { callbackUrl: '/boards' })}
-                            className="group flex items-center gap-2 bg-zinc-900 border border-white/10 hover:border-white/20 text-zinc-300 px-8 py-3.5 rounded-full text-sm font-medium transition-all"
-                        >
-                            Create Account
-                            <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg>
-                        </button>
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={() => signIn('google', { callbackUrl: '/boards' })}
+                                className="group flex items-center gap-2 bg-zinc-900 border border-white/10 hover:border-white/20 text-zinc-300 px-8 py-3.5 rounded-full text-sm font-medium transition-all"
+                            >
+                                Create Account
+                                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </button>
+
+                            <button
+                                onClick={() => signIn('google', { callbackUrl: '/boards' })}
+                                className="px-8 py-3.5 rounded-full text-sm font-medium text-zinc-400 hover:text-white transition-all"
+                            >
+                                Login
+                            </button>
+                        </div>
                     )}
                 </div>
 
