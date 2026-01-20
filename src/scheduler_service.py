@@ -12,16 +12,15 @@ from analysis import analyze_data
 class SchedulerService:
     """Scheduler that periodically runs the ingestion + analysis pipeline."""
 
-    def __init__(self, interval_minutes: int = 60):
+    def __init__(self):
         self._logger = logging.getLogger("scheduler_service")
-        self.interval_minutes = interval_minutes
         self._scheduler = BackgroundScheduler()
         self._job = None
 
     def start(self):
         if not self._scheduler.running:
-            # Schedule a periodic job to run analysis for all boards
-            self._job = self._scheduler.add_job(self._run_analysis_once, "interval", minutes=self.interval_minutes, next_run_time=None)
+            # Schedule daily analysis job at 02:00
+            self._job = self._scheduler.add_job(self._run_analysis_once, "cron", hour=2, minute=0)
 
             # Schedule a daily job to compute and save board stats for frontend use
             try:
@@ -33,7 +32,7 @@ class SchedulerService:
                 self._logger.exception("Failed to schedule daily board stats generation")
 
             self._scheduler.start()
-            self._logger.info("Scheduler started: analysis every %s minutes", self.interval_minutes)
+            self._logger.info("Scheduler started: analysis daily at 02:00")
 
     def shutdown(self):
         if self._scheduler.running:

@@ -51,7 +51,7 @@ app.add_middleware(
 
 # Services
 monitor = MonitorService(interval=int(os.getenv("MONITOR_INTERVAL", "300")))
-scheduler = SchedulerService(interval_minutes=int(os.getenv("ANALYSIS_INTERVAL_MIN", "60")))
+scheduler = SchedulerService()
 
 admin_header_scheme = APIKeyHeader(name="X-Admin-Key", auto_error=False)
 
@@ -83,7 +83,6 @@ def health():
     return {
         "monitor_running": monitor.running(),
         "scheduler_running": scheduler._scheduler.running,
-        "analysis_interval_min": scheduler.interval_minutes,
         "environment": ENVIRONMENT
     }
 
