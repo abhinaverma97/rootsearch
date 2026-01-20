@@ -12,7 +12,7 @@ import SearchResultCard from '../../components/SearchResultCard';
 import SearchVisualizations from '../../components/SearchVisualizations';
 import ThreadDetailView from '../../components/ThreadDetailView';
 import { searchAdvanced, AdvancedSearchParams, Opportunity } from '../../lib/api';
-import { Search, Filter, Database, Zap, Loader2, Info, Check, ChevronDown, X } from 'lucide-react';
+import { Search, Filter, Database, Zap, Loader2, Info, Check, ChevronDown, X, ArrowLeft } from 'lucide-react';
 import QuickGlance from '../../components/QuickGlance';
 import FilterDropdown from '../../components/FilterDropdown';
 import { BOARD_CATEGORIES } from '../../lib/categories';
@@ -184,34 +184,68 @@ export default function SearchPage() {
         } else if (mode === 'analyzed') {
             setSelectedAnalyzedItem(item);
         }
+        setShowMobileDetail(true);
     };
 
+    // Mobile State
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [showMobileDetail, setShowMobileDetail] = useState(false);
 
     return (
         <div className="min-h-screen flex bg-[#050505] text-zinc-300 font-sans overflow-hidden">
+            {/* Desktop Sidebar */}
             <Sidebar />
+
+            {/* Mobile Sidebar Overlay */}
+            {isMobileMenuOpen && (
+                <div className="fixed inset-0 z-50 flex md:hidden">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
+                    <div className="relative w-20 bg-[#050505] border-r border-white/10 h-full">
+                        <Sidebar className="!flex !static h-full" />
+                    </div>
+                </div>
+            )}
 
             <div className="flex-1 flex flex-col h-screen">
                 {/* 1. Header (Unified Board-Style) */}
-                <header className="sticky top-0 z-20 bg-[#050505]/80 backdrop-blur-md border-b border-white/10 px-6 py-4 flex items-center gap-6 shrink-0">
-                    <h1 className="text-xl font-bold tracking-tight text-white shrink-0">Advanced Search</h1>
+                <header className="sticky top-0 z-20 bg-[#050505]/80 backdrop-blur-md border-b border-white/10 px-4 md:px-6 py-4 flex flex-col md:flex-row items-center gap-4 md:gap-6 shrink-0">
+                    <div className="w-full md:w-auto flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                            {/* Mobile Hamburger */}
+                            <button
+                                onClick={() => setIsMobileMenuOpen(true)}
+                                className="md:hidden p-1 -ml-1 text-zinc-400 hover:text-white shrink-0"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" x2="21" y1="6" y2="6" /><line x1="3" x2="21" y1="12" y2="12" /><line x1="3" x2="21" y1="18" y2="18" /></svg>
+                            </button>
+                            <h1 className="text-xl font-bold tracking-tight text-white shrink-0">Advanced Search</h1>
+                        </div>
 
-                    <div className="relative flex-1 max-w-2xl">
+                        {/* Mobile: View Analytics Toggle (HIDDEN since we removed analytics on mobile) */}
+                        {/* <button
+                            onClick={() => setShowMobileDetail(!showMobileDetail)}
+                            className="md:hidden text-xs font-bold uppercase tracking-wider text-violet-400 hover:text-violet-300"
+                        >
+                            {showMobileDetail ? "View Results" : "View Analytics"}
+                        </button> */}
+                    </div>
+
+                    <div className="relative w-full md:flex-1 md:max-w-2xl">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                         <input
                             type="text"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
-                            placeholder={mode === 'analyzed' ? "Search opportunities (e.g. 'saas -mobile')" : "Search raw posts (e.g. 'cats OR dogs')"}
+                            placeholder={mode === 'analyzed' ? "Search opportunities..." : "Search raw posts..."}
                             className="w-full bg-[#0A0A0B] border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 transition-all font-mono"
                             autoFocus
                         />
                         {loading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-violet-500 animate-spin" />}
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="w-full md:w-auto flex items-center justify-between md:justify-end gap-3 md:gap-4 overflow-x-auto no-scrollbar">
                         {/* Mode Toggle */}
-                        <div className="flex bg-[#0A0A0B] p-1 rounded-lg border border-white/5">
+                        <div className="flex bg-[#0A0A0B] p-1 rounded-lg border border-white/5 shrink-0">
                             <button
                                 onClick={() => setMode('analyzed')}
                                 className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all ${mode === 'analyzed' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'
@@ -233,7 +267,7 @@ export default function SearchPage() {
                         {/* Filter Toggle */}
                         <button
                             onClick={() => setShowFilters(!showFilters)}
-                            className={`p-2 rounded-lg border transition-all ${showFilters ? 'bg-violet-500/10 border-violet-500/50 text-violet-400' : 'bg-transparent border-transparent hover:bg-white/5 hover:border-white/10 text-zinc-500'}`}
+                            className={`p-2 rounded-lg border transition-all shrink-0 ${showFilters ? 'bg-violet-500/10 border-violet-500/50 text-violet-400' : 'bg-transparent border-transparent hover:bg-white/5 hover:border-white/10 text-zinc-500'}`}
                         >
                             <Filter className="w-4 h-4" />
                         </button>
@@ -242,20 +276,20 @@ export default function SearchPage() {
 
                 {/* 2. Filter Bar (Conditional) */}
                 {showFilters && (
-                    <div className="border-b border-white/5 bg-[#0A0A0B] px-6 py-3 flex items-center gap-6 animate-in slide-in-from-top-2">
-                        <span className="text-[10px] uppercase font-black tracking-widest text-zinc-600">Filters</span>
+                    <div className="border-b border-white/5 bg-[#0A0A0B] px-6 py-3 flex items-center gap-6 animate-in slide-in-from-top-2 overflow-x-auto no-scrollbar">
+                        <span className="text-[10px] uppercase font-black tracking-widest text-zinc-600 shrink-0">Filters</span>
 
                         {mode === 'analyzed' ? (
                             isPro ? (
                                 <>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 shrink-0">
                                         <span className="text-xs text-zinc-500">Boards:</span>
                                         <BoardMultiSelect
                                             selected={selectedBoards}
                                             onChange={setSelectedBoards}
                                         />
                                     </div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 shrink-0">
                                         <span className="text-xs text-zinc-500">Intent:</span>
                                         <FilterDropdown
                                             value={intent || null}
@@ -270,7 +304,7 @@ export default function SearchPage() {
                                             ]}
                                         />
                                     </div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 shrink-0">
                                         <span className="text-xs text-zinc-500">Industry:</span>
                                         <FilterDropdown
                                             value={category || null}
@@ -282,7 +316,7 @@ export default function SearchPage() {
                                             ]}
                                         />
                                     </div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 shrink-0">
                                         <span className="text-xs text-zinc-500">Min Score:</span>
                                         <FilterDropdown
                                             value={scoreMin || 0}
@@ -295,7 +329,7 @@ export default function SearchPage() {
                                             ]}
                                         />
                                     </div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 shrink-0">
                                         <span className="text-xs text-zinc-500">Complexity:</span>
                                         <FilterDropdown
                                             value={complexity || null}
@@ -310,13 +344,13 @@ export default function SearchPage() {
                                     </div>
                                 </>
                             ) : (
-                                <div className="flex items-center gap-4 text-zinc-600 text-[10px] uppercase font-bold tracking-widest pl-4 border-l border-white/5 opacity-50 cursor-not-allowed">
+                                <div className="flex items-center gap-4 text-zinc-600 text-[10px] uppercase font-bold tracking-widest pl-4 border-l border-white/5 opacity-50 cursor-not-allowed shrink-0">
                                     <Lock className="w-3 h-3" />
                                     <span>Advanced Filters Locked</span>
                                 </div>
                             )
                         ) : (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 shrink-0">
                                 <span className="text-xs text-zinc-500 italic">Search Syntax:</span>
                                 <div className="relative group">
                                     <Info className="w-4 h-4 text-zinc-500 hover:text-zinc-300 cursor-help transition-colors" />
@@ -342,10 +376,10 @@ export default function SearchPage() {
                             </div>
                         )}
 
-                        <div className="h-4 w-px bg-white/10 mx-2"></div>
+                        <div className="h-4 w-px bg-white/10 mx-2 shrink-0"></div>
 
                         {/* Sorting UI */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 shrink-0">
                             <span className="text-xs text-zinc-500">Sort:</span>
                             <FilterDropdown
                                 value={`${sortBy}-${sortOrder}`}
@@ -369,15 +403,18 @@ export default function SearchPage() {
                         <div className="flex-1" />
                         <button
                             onClick={() => { setScoreMin(0); setComplexity(''); setIntent(''); setSelectedBoards([]); setSortBy('date'); setSortOrder('desc'); }}
-                            className="text-[10px] uppercase font-bold text-zinc-600 hover:text-white"
+                            className="text-[10px] uppercase font-bold text-zinc-600 hover:text-white shrink-0"
                         >Reset</button>
                     </div>
                 )}
 
-                {/* 3. Main Content (50/50 Split) */}
+                {/* 3. Main Content (50/50 Split on Desktop, Toggle on Mobile) */}
                 <main className="flex-1 flex overflow-hidden">
-                    {/* Left: Results List */}
-                    <div className="w-1/2 overflow-y-auto no-scrollbar border-r border-white/5">
+                    {/* Left: Results List (Hidden on Mobile if Detail Open) */}
+                    <div className={`
+                        w-full md:w-1/2 overflow-y-auto no-scrollbar border-r border-white/5 bg-[#050505]
+                        ${showMobileDetail ? 'hidden md:block' : 'block'}
+                    `}>
                         <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-[#050505]/95 backdrop-blur z-10">
                             <h2 className="text-sm font-bold text-zinc-300">Results</h2>
                             <span className="text-xs text-zinc-500 font-mono">{total} found</span>
@@ -428,14 +465,27 @@ export default function SearchPage() {
                         </div>
                     </div>
 
-                    {/* Right: Visualizations & Detail Split */}
-                    <div className="w-1/2 h-full bg-[#0A0A0B] flex flex-col overflow-hidden">
+                    {/* Right: Visualizations & Detail Split (Hidden on Mobile unless Detail Open) */}
+                    <div className={`
+                        flex-1 h-full bg-[#0A0A0B] flex flex-col overflow-hidden
+                        ${showMobileDetail ? 'flex w-full fixed md:static inset-0 z-30' : 'hidden md:flex md:w-1/2'}
+                    `}>
+                        {/* Mobile Back Button for Analytics/Details */}
+                        <div className="md:hidden flex items-center justify-between p-4 border-b border-white/5 bg-[#0A0A0B]">
+                            <button
+                                onClick={() => setShowMobileDetail(false)}
+                                className="flex items-center gap-2 text-zinc-400 hover:text-white"
+                            >
+                                <ArrowLeft className="w-4 h-4" />
+                                <span className="text-xs font-bold uppercase tracking-widest">Back to Results</span>
+                            </button>
+                        </div>
 
                         {/* Live Mode: Top = Context, Bottom = Analytics */}
                         {mode === 'live' ? (
                             <>
                                 {/* Upper Half: Thread Context */}
-                                <div className="h-1/2 bg-[#050505] overflow-hidden border-b border-white/5">
+                                <div className="h-full md:h-1/2 bg-[#050505] overflow-hidden border-b border-white/5">
                                     {selectedLiveItem ? (
                                         isPro ? (
                                             <ThreadDetailView
@@ -458,7 +508,7 @@ export default function SearchPage() {
                                 </div>
 
                                 {/* Lower Half: Analytics */}
-                                <div className="h-1/2 overflow-y-auto scroll-smooth">
+                                <div className="hidden md:block h-1/2 overflow-y-auto scroll-smooth">
                                     <SearchVisualizations data={results} mode={mode} total={total} aggregations={aggregations} />
                                 </div>
                             </>
@@ -468,19 +518,19 @@ export default function SearchPage() {
                                 {selectedAnalyzedItem ? (
                                     <>
                                         {/* Top Half: Quick Glance */}
-                                        <div className="h-1/2 bg-[#050505] overflow-hidden border-b border-white/5">
+                                        <div className="h-full md:h-1/2 bg-[#050505] overflow-hidden border-b border-white/5">
                                             <QuickGlance
                                                 opportunity={selectedAnalyzedItem}
                                                 onClose={() => setSelectedAnalyzedItem(null)}
                                             />
                                         </div>
                                         {/* Lower Half: Analytics */}
-                                        <div className="h-1/2 overflow-y-auto scroll-smooth">
+                                        <div className="hidden md:block h-1/2 overflow-y-auto scroll-smooth">
                                             <SearchVisualizations data={results} mode={mode} total={total} aggregations={aggregations} />
                                         </div>
                                     </>
                                 ) : (
-                                    <div className="h-full overflow-y-auto scroll-smooth">
+                                    <div className="hidden md:block h-full overflow-y-auto scroll-smooth">
                                         <SearchVisualizations data={results} mode={mode} total={total} aggregations={aggregations} />
                                     </div>
                                 )}

@@ -10,7 +10,7 @@ export default function TrackingPreview() {
             <div className="max-w-[1600px] mx-auto grid lg:grid-cols-12 gap-12 lg:gap-24">
 
                 {/* Content */}
-                <div className="lg:col-span-5 flex flex-col justify-center">
+                <div className="lg:col-span-5 flex flex-col justify-center order-2 lg:order-1">
                     <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-6">
                         Curate & Track.
                         <br />
@@ -43,7 +43,7 @@ export default function TrackingPreview() {
                 </div>
 
                 {/* Visuals */}
-                <div className="lg:col-span-7 grid md:grid-cols-2 gap-6 items-center">
+                <div className="hidden lg:grid lg:col-span-7 md:grid-cols-2 gap-6 items-center order-1 lg:order-2 mb-12 lg:mb-0">
 
                     {/* Card 1: Saved Items */}
                     <div className="bg-[#0A0A0B] border border-white/10 rounded-2xl p-6 shadow-2xl relative translate-y-8 md:translate-y-12 z-10">

@@ -176,18 +176,46 @@ export default function BoardsPage() {
             return 0;
         });
 
+    // Mobile Sidebar State
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
     return (
-        <div className="min-h-screen flex bg-[#050505] text-white font-sans overflow-hidden">
+        <div className="min-h-screen flex flex-col md:flex-row bg-[#050505] text-white font-sans overflow-hidden">
+            {/* Desktop Sidebar */}
             <Sidebar />
 
+            {/* Mobile Sidebar Overlay */}
+            {isMobileMenuOpen && (
+                <div className="fixed inset-0 z-50 flex md:hidden">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
+                    <div className="relative w-20 bg-[#050505] border-r border-white/10 h-full">
+                        <Sidebar className="!flex !static h-full" />
+                    </div>
+                </div>
+            )}
+
+            {/* Main Content */}
             <div className="flex-1 flex flex-col h-screen overflow-y-auto overflow-x-hidden relative scroll-smooth no-scrollbar">
                 {/* Top Navigation */}
-                <header className="sticky top-0 z-20 bg-[#050505]/80 backdrop-blur-md border-b border-white/10 px-8 py-5 flex items-center justify-between">
-                    <div className="flex items-center gap-8">
-                        <h1 className="text-xl font-bold tracking-tight">4chan Boards</h1>
+                <header className="sticky top-0 z-20 bg-[#050505]/80 backdrop-blur-md border-b border-white/10 px-4 md:px-8 py-4 md:py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex items-center justify-between w-full md:w-auto">
+                        <div className="flex items-center gap-4">
+                            {/* Mobile Menu Button */}
+                            <button
+                                onClick={() => setIsMobileMenuOpen(true)}
+                                className="md:hidden p-2 -ml-2 text-zinc-400 hover:text-white"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" x2="21" y1="6" y2="6" /><line x1="3" x2="21" y1="12" y2="12" /><line x1="3" x2="21" y1="18" y2="18" /></svg>
+                            </button>
+                            <h1 className="text-lg md:text-xl font-bold tracking-tight">4chan Boards</h1>
+                        </div>
 
-                        {/* Tabs */}
-                        <div className="flex items-center gap-1 bg-zinc-900/50 p-1 rounded-lg border border-white/5">
+                        {/* Mobile Search Icon Toggle (Optional, or just keep full search below) */}
+                    </div>
+
+                    <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 w-full md:w-auto">
+                        {/* Tabs - horizontal scroll on mobile */}
+                        <div className="flex items-center gap-1 bg-zinc-900/50 p-1 rounded-lg border border-white/5 overflow-x-auto no-scrollbar whitespace-nowrap">
                             <button
                                 onClick={() => handleScroll(categoriesRef, "categories")}
                                 className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${activeTab === "categories" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"}`}
@@ -207,27 +235,25 @@ export default function BoardsPage() {
                                 Curated
                             </button>
                         </div>
-                    </div>
 
-                    <div className="flex items-center gap-4">
                         <div className="relative">
                             <input
                                 type="text"
                                 placeholder="Search boards..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="bg-[#0A0A0A] border border-white/10 rounded-lg pl-9 pr-4 py-1.5 text-sm text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 w-64 transition-all"
+                                className="w-full md:w-64 bg-[#0A0A0A] border border-white/10 rounded-lg pl-9 pr-4 py-1.5 text-sm text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 transition-all"
                             />
                             <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
                         </div>
                     </div>
                 </header>
 
-                <div className="p-8 pb-32">
+                <div className="p-4 md:p-8 pb-32">
                     {/* Section: Categories */}
                     <div ref={categoriesRef} className="mb-12 scroll-mt-24">
                         <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-widest mb-6 px-1">Board Categories</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-4">
                             {filteredCategories.map((cat) => {
                                 const stats = getCategoryStats(cat.boards, allBoardStats);
                                 return (
@@ -264,7 +290,7 @@ export default function BoardsPage() {
                                 Create Collection
                             </button>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-4">
                             {curatedCategories.map((cat) => {
                                 const stats = getCategoryStats(cat.boards, allBoardStats);
                                 return (
@@ -301,14 +327,14 @@ export default function BoardsPage() {
 
                     {/* Section: All Boards */}
                     <div ref={allBoardsRef} className="scroll-mt-24">
-                        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6 px-1">
-                            <div className="flex-1">
+                        <div className="flex flex-col xl:flex-row xl:items-end justify-between mb-8 gap-6 px-1">
+                            <div className="flex-1 w-full">
                                 <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-widest mb-4">
                                     {isSelecting ? "Select Boards for Collection" : "All Boards"}
                                 </h2>
 
                                 {/* Advanced Filter Bar */}
-                                <div className="flex flex-wrap items-center gap-4 bg-[#0A0A0B] border border-white/5 p-3 rounded-xl">
+                                <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-4 bg-[#0A0A0B] border border-white/5 p-3 rounded-xl w-full">
                                     <div className="flex items-center gap-2">
                                         <span className="text-[10px] uppercase font-bold text-zinc-500 min-w-max">Min Replies</span>
                                         <input
@@ -316,7 +342,7 @@ export default function BoardsPage() {
                                             value={minReplies || ""}
                                             onChange={(e) => setMinReplies(Number(e.target.value))}
                                             placeholder="0"
-                                            className="w-20 bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-violet-500/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            className="w-full sm:w-20 bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-violet-500/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                         />
                                     </div>
                                     <div className="flex items-center gap-2">
@@ -326,19 +352,19 @@ export default function BoardsPage() {
                                             value={minThreads || ""}
                                             onChange={(e) => setMinThreads(Number(e.target.value))}
                                             placeholder="0"
-                                            className="w-20 bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-violet-500/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            className="w-full sm:w-20 bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-violet-500/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                         />
                                     </div>
                                     <button
                                         onClick={() => { setMinReplies(0); setMinThreads(0); setSearch(""); }}
-                                        className="text-[10px] uppercase font-bold text-zinc-600 hover:text-zinc-400 ml-2"
+                                        className="text-[10px] uppercase font-bold text-zinc-600 hover:text-zinc-400 sm:ml-auto"
                                     >
                                         Clear All
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-3 text-xs font-mono mb-1">
+                            <div className="flex items-center gap-3 text-xs font-mono mb-1 overflow-x-auto no-scrollbar whitespace-nowrap">
                                 <span className="text-zinc-600">Sort by:</span>
                                 <button onClick={() => setSortBy("replies")} className={`transition-colors ${sortBy === "replies" ? "text-violet-400 font-bold" : "text-zinc-500 hover:text-zinc-300"}`}>Activity</button>
                                 <button onClick={() => setSortBy("threads")} className={`transition-colors ${sortBy === "threads" ? "text-violet-400 font-bold" : "text-zinc-500 hover:text-zinc-300"}`}>Threads</button>
@@ -402,33 +428,41 @@ export default function BoardsPage() {
 
                 {/* Floating Selection Bar */}
                 {isSelecting && (
-                    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4">
-                        <div className="bg-[#111112] border border-white/10 rounded-2xl shadow-2xl p-2 pl-4 flex items-center gap-4 min-w-[400px] backdrop-blur-xl">
-                            <div className="text-xs font-medium text-zinc-400">
-                                <span className="text-violet-400 font-bold">{selectedBoards.length}</span> boards selected
+                    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 w-[90%] md:w-auto">
+                        <div className="bg-[#111112] border border-white/10 rounded-2xl shadow-2xl p-3 pl-4 flex flex-col md:flex-row items-center gap-4 min-w-[auto] md:min-w-[400px] backdrop-blur-xl">
+                            <div className="text-xs font-medium text-zinc-400 w-full md:w-auto flex justify-between md:block">
+                                <div>
+                                    <span className="text-violet-400 font-bold">{selectedBoards.length}</span> boards selected
+                                </div>
+                                <button
+                                    onClick={() => { setIsSelecting(false); setSelectedBoards([]); }}
+                                    className="md:hidden text-xs font-bold text-zinc-500 hover:text-zinc-300"
+                                >
+                                    Cancel
+                                </button>
                             </div>
-                            <div className="h-6 w-px bg-white/10" />
+                            <div className="hidden md:block h-6 w-px bg-white/10" />
                             <input
                                 type="text"
                                 placeholder="Collection name..."
                                 value={newCollectionName}
                                 onChange={(e) => setNewCollectionName(e.target.value)}
-                                className="bg-transparent border-none outline-none text-sm text-white placeholder-zinc-600 flex-1"
+                                className="bg-transparent border-none outline-none text-sm text-white placeholder-zinc-600 flex-1 w-full md:w-auto"
                                 autoFocus
                             />
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-2 w-full md:w-auto justify-end">
                                 <button
                                     onClick={() => { setIsSelecting(false); setSelectedBoards([]); }}
-                                    className="px-4 py-2 text-xs font-bold text-zinc-500 hover:text-zinc-300"
+                                    className="hidden md:block px-4 py-2 text-xs font-bold text-zinc-500 hover:text-zinc-300"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={saveNewCollection}
                                     disabled={!newCollectionName || selectedBoards.length === 0}
-                                    className="bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:hover:bg-violet-600 text-white px-6 py-2 rounded-xl text-xs font-bold transition-all shadow-lg shadow-violet-500/20"
+                                    className="w-full md:w-auto bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:hover:bg-violet-600 text-white px-6 py-2 rounded-xl text-xs font-bold transition-all shadow-lg shadow-violet-500/20"
                                 >
-                                    Save Collection
+                                    Save
                                 </button>
                             </div>
                         </div>

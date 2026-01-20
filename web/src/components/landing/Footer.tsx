@@ -5,7 +5,7 @@ export default function Footer() {
     return (
         <footer className="border-t border-white/5 bg-[#050505] py-12 px-6">
             <div className="max-w-6xl mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 mb-8">
                     {/* Brand */}
                     <div className="md:col-span-2">
                         <h3 className="font-mono font-bold text-lg text-white mb-3">rootsearch</h3>

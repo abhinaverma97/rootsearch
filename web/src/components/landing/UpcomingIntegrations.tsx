@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function UpcomingIntegrations() {
     return (
-        <section className="py-24 px-8 border-t border-white/5 bg-[#050505] relative overflow-hidden">
+        <section className="py-16 md:py-24 px-6 md:px-8 border-t border-white/5 bg-[#050505] relative overflow-hidden">
 
             {/* Background Glow */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-violet-600/5 blur-[100px] rounded-full pointer-events-none"></div>
@@ -22,7 +22,7 @@ export default function UpcomingIntegrations() {
                     All integrations will be included in your Pro account when launched.
                 </p>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-3 md:grid-cols-3 gap-3 md:gap-6">
                     <IntegrationCard
                         name="Reddit"
                         status="Coming Soon"
@@ -55,13 +55,13 @@ export default function UpcomingIntegrations() {
 
 function IntegrationCard({ name, status, icon, color }: { name: string, status: string, icon: React.ReactNode, color: string }) {
     return (
-        <div className="group relative p-6 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-all flex flex-col items-center gap-4 hover:-translate-y-1">
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${color} shadow-lg shadow-black/20 group-hover:scale-110 transition-transform`}>
-                {icon}
+        <div className="group relative p-3 md:p-6 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-all flex flex-col items-center gap-2 md:gap-4 hover:-translate-y-1">
+            <div className={`w-10 h-10 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex items-center justify-center ${color} shadow-lg shadow-black/20 group-hover:scale-110 transition-transform`}>
+                <div className="scale-75 md:scale-100">{icon}</div>
             </div>
             <div>
-                <h4 className="text-lg font-bold text-white mb-1">{name}</h4>
-                <div className="flex items-center justify-center gap-2">
+                <h4 className="text-xs md:text-lg font-bold text-white mb-1 md:mb-1">{name}</h4>
+                <div className="hidden md:flex items-center justify-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse"></span>
                     <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest">{status}</span>
                 </div>

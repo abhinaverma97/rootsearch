@@ -18,7 +18,7 @@ export default function HeroSection({ stats }: { stats: { posts: number, boards:
 
             <div className="relative z-10 max-w-5xl mx-auto flex flex-col items-center">
                 {/* Headline */}
-                <h1 className="text-5xl md:text-8xl font-bold tracking-tight mb-8 opacity-0 animate-[fadeIn_0.5s_ease-out_0.1s_forwards] leading-tight text-white">
+                <h1 className="text-4xl md:text-8xl font-bold tracking-tight mb-8 opacity-0 animate-[fadeIn_0.5s_ease-out_0.1s_forwards] leading-tight text-white">
                     Find What People <br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-200 to-zinc-500">Actually Want.</span>
                 </h1>
@@ -30,7 +30,7 @@ export default function HeroSection({ stats }: { stats: { posts: number, boards:
                 </p>
 
                 {/* Buttons */}
-                <div className="flex flex-row items-center justify-center gap-4 opacity-0 animate-[fadeIn_0.5s_ease-out_0.3s_forwards]">
+                <div className="flex flex-col md:flex-row items-center justify-center gap-4 opacity-0 animate-[fadeIn_0.5s_ease-out_0.3s_forwards] w-full md:w-auto">
                     {session ? (
                         <div className="flex flex-row items-center gap-4">
                             <div className="flex items-center gap-2 px-8 py-3.5 rounded-full bg-zinc-900 border border-white/10 text-zinc-400 text-sm">

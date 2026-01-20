@@ -23,7 +23,7 @@ export default function InsightsPreview() {
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none opacity-20" />
 
                     {/* The Card */}
-                    <div className="relative bg-[#0A0A0B] border border-white/10 rounded-2xl shadow-2xl p-8 md:p-12 overflow-hidden group hover:border-emerald-500/30 transition-colors duration-500">
+                    <div className="relative bg-[#0A0A0B] border border-white/10 rounded-2xl shadow-2xl p-6 md:p-12 overflow-hidden group hover:border-emerald-500/30 transition-colors duration-500">
                         {/* Top Bar */}
                         <div className="flex flex-wrap items-center justify-between gap-6 mb-12">
                             <div className="flex items-center gap-3">
@@ -51,7 +51,7 @@ export default function InsightsPreview() {
                             <div className="space-y-8">
                                 <div>
                                     <div className="text-[10px] uppercase font-black tracking-widest text-zinc-500 mb-2">Core Pain Point</div>
-                                    <h3 className="text-2xl md:text-3xl font-bold text-white leading-tight">
+                                    <h3 className="text-xl md:text-3xl font-bold text-white leading-tight">
                                         "I waste 2 hours a day manually copying data between Notion and Google Sheets because Zapier is too expensive."
                                     </h3>
                                 </div>

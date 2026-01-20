@@ -2,9 +2,9 @@ import Link from "next/link";
 import { Home, Layers, Search, Key, User, LogIn, Bookmark } from 'lucide-react';
 import UserNav from './UserNav';
 
-export default function Sidebar() {
+export default function Sidebar({ className = "" }: { className?: string }) {
     return (
-        <div className="h-screen sticky top-0 w-20 flex flex-col items-center py-6 border-r border-white/10 bg-[#050505]/50 backdrop-blur-sm z-30">
+        <div className={`hidden md:flex h-screen sticky top-0 w-20 flex-col items-center py-6 border-r border-white/10 bg-[#050505]/50 backdrop-blur-sm z-30 ${className}`}>
             {/* Logo/Home Icon */}
             <Link href="/" className="mb-8 p-3 flex items-center justify-center text-zinc-400 hover:text-white transition-colors">
                 <span className="font-mono font-bold tracking-tighter text-xl">rs</span>

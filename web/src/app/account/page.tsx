@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import Sidebar from '../../components/Sidebar';
-import { User, LogOut, Check } from 'lucide-react';
+import { User, LogOut, Check, Menu } from 'lucide-react';
 import { plans } from '../../lib/plans';
 import { processPayment } from '../../lib/razorpay';
 import { useRouter } from 'next/navigation';
@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 export default function AccountPage() {
     const { data: session, update } = useSession();
     const router = useRouter();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     if (!session) {
         return (
@@ -40,14 +41,34 @@ export default function AccountPage() {
 
     return (
         <div className="flex min-h-screen bg-[#050505] font-sans text-zinc-300">
+            {/* Desktop Sidebar */}
             <Sidebar />
-            <main className="flex-1 p-8 overflow-y-auto">
-                <div className="max-w-4xl mx-auto space-y-8">
+
+            {/* Mobile Sidebar Overlay */}
+            {isMobileMenuOpen && (
+                <div className="fixed inset-0 z-50 flex md:hidden">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
+                    <div className="relative w-20 bg-[#050505] border-r border-white/10 h-full">
+                        <Sidebar className="!flex !static h-full" />
+                    </div>
+                </div>
+            )}
+
+            <main className="flex-1 p-4 md:p-8 overflow-y-auto">
+                <div className="max-w-4xl mx-auto space-y-6 md:space-y-8">
 
                     {/* Header */}
-                    <div>
-                        <h1 className="text-3xl font-bold text-white tracking-tight">Account Settings</h1>
-                        <p className="text-zinc-500 mt-2">Manage your profile and subscription.</p>
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setIsMobileMenuOpen(true)}
+                            className="md:hidden text-zinc-400 hover:text-white"
+                        >
+                            <Menu className="w-6 h-6" />
+                        </button>
+                        <div>
+                            <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">Account Settings</h1>
+                            <p className="text-sm md:text-base text-zinc-500 mt-1">Manage your profile and subscription.</p>
+                        </div>
                     </div>
 
                     {/* Profile Section */}

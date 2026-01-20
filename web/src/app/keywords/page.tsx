@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/Sidebar';
-import { Bell, Plus, RefreshCw, Check, CheckCircle2, ChevronRight, MessageSquare, ExternalLink, X, Loader2 } from 'lucide-react';
+import { Bell, Plus, RefreshCw, Check, CheckCircle2, ChevronRight, MessageSquare, ExternalLink, X, Loader2, Menu, ArrowLeft } from 'lucide-react';
 import { getKeywords, addKeyword, markKeywordRead, KeywordStats, fetchKeywordMatches, KeywordMatch } from '../../lib/api';
 import ThreadDetailView from '../../components/ThreadDetailView';
 import { useSession } from 'next-auth/react';
@@ -102,23 +102,55 @@ export default function KeywordsPage() {
         return [{ label: 'All Keywords', items: keywords }];
     };
 
+
+
+    // Mobile State
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [showMobileDetail, setShowMobileDetail] = useState(false);
+
     return (
         <div className="min-h-screen flex bg-[#050505] text-zinc-300 font-sans overflow-hidden">
+            {/* Desktop Sidebar */}
             <Sidebar />
+
+            {/* Mobile Sidebar Overlay */}
+            {isMobileMenuOpen && (
+                <div className="fixed inset-0 z-50 flex md:hidden">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
+                    <div className="relative w-20 bg-[#050505] border-r border-white/10 h-full">
+                        <Sidebar className="!flex !static h-full" />
+                    </div>
+                </div>
+            )}
 
             <div className="flex-1 flex flex-col h-screen overflow-hidden">
                 {/* Header */}
-                <header className="px-8 py-6 border-b border-white/10 flex items-center justify-between shrink-0 bg-[#050505]/80 backdrop-blur">
-                    <div className="flex items-center gap-4">
-                        <h1 className="text-xl font-bold text-white tracking-tight">Tracked Keywords</h1>
-                        <button onClick={loadData} className="p-1.5 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-white transition-colors">
-                            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                <header className="px-4 md:px-8 py-4 md:py-6 border-b border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shrink-0 bg-[#050505]/80 backdrop-blur z-10">
+                    <div className="flex items-center gap-4 w-full md:w-auto justify-between">
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={() => setIsMobileMenuOpen(true)}
+                                className="md:hidden text-zinc-400 hover:text-white"
+                            >
+                                <Menu className="w-6 h-6" />
+                            </button>
+                            <h1 className="text-xl font-bold text-white tracking-tight">Tracked Keywords</h1>
+                            <button onClick={loadData} className="p-1.5 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-white transition-colors">
+                                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                            </button>
+                        </div>
+                        {/* Mobile Add Button (simplified) */}
+                        <button
+                            onClick={() => setShowAdd(true)}
+                            className="md:hidden flex items-center justify-center w-8 h-8 bg-violet-600 hover:bg-violet-500 text-white rounded-lg transition-all"
+                        >
+                            <Plus className="w-5 h-5" />
                         </button>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <div className="flex bg-[#0A0A0B] p-1 rounded-lg border border-white/10">
-                            <span className="px-3 py-1.5 text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Group by</span>
+                    <div className="flex items-center gap-4 w-full md:w-auto overflow-x-auto no-scrollbar">
+                        <div className="flex bg-[#0A0A0B] p-1 rounded-lg border border-white/10 shrink-0">
+                            <span className="px-3 py-1.5 text-[10px] uppercase font-bold text-zinc-500 tracking-wider hidden sm:block">Group by</span>
                             {(['none', 'keyword', 'audience'] as const).map(g => (
                                 <button
                                     key={g}
@@ -132,7 +164,7 @@ export default function KeywordsPage() {
 
                         <button
                             onClick={() => setShowAdd(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold rounded-lg transition-all"
+                            className="hidden md:flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold rounded-lg transition-all shrink-0"
                         >
                             <Plus className="w-4 h-4" /> Add Keyword
                         </button>
@@ -140,9 +172,12 @@ export default function KeywordsPage() {
                 </header>
 
                 {/* Main Content Areas */}
-                <div className="flex-1 flex overflow-hidden">
-                    {/* Left: Keywords List */}
-                    <main className={`overflow-y-auto px-8 py-8 no-scrollbar transition-all duration-300 ${selectedKeyword ? 'w-1/3 border-r border-white/5' : 'w-full'}`}>
+                <div className="flex-1 flex overflow-hidden relative">
+                    {/* Left: Keywords List (Level 1) */}
+                    <main className={`
+                        overflow-y-auto px-4 md:px-8 py-4 md:py-8 no-scrollbar transition-all duration-300 bg-[#050505]
+                        ${selectedKeyword ? 'hidden md:block w-1/3 border-r border-white/5' : 'w-full'}
+                    `}>
                         {/* Add Modal/Form Inline */}
                         {showAdd && (
                             <div className="mb-8 p-6 bg-[#0A0A0B] border border-violet-500/20 rounded-xl animate-in slide-in-from-top-2">
@@ -248,33 +283,46 @@ export default function KeywordsPage() {
                         )}
                     </main>
 
-                    {/* Right: Matches & Context Area */}
-                    <div className={`flex-1 flex flex-col bg-[#050505] transition-all duration-300 ${selectedKeyword ? 'translate-x-0' : 'translate-x-full absolute right-0'}`}>
+                    {/* Right: Matches & Context Area (Level 2 & 3) */}
+                    <div className={`
+                        flex-col bg-[#050505] transition-all duration-300 md:relative md:flex md:translate-x-0
+                        ${selectedKeyword ? 'flex fixed inset-0 z-20 w-full translate-x-0' : 'fixed inset-0 z-20 w-full translate-x-full md:absolute md:right-0 md:w-2/3'}
+                    `}>
                         {selectedKeyword ? (
                             <div className="flex flex-col h-full">
                                 {/* Matches List Header */}
-                                <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between bg-[#0A0A0B]">
+                                <div className="px-4 md:px-6 py-4 border-b border-white/5 flex items-center justify-between bg-[#0A0A0B]">
                                     <div className="flex items-center gap-3">
-                                        <MessageSquare className="w-4 h-4 text-violet-400" />
-                                        <h2 className="text-sm font-bold text-white tracking-tight">Mentions for "{selectedKeyword}"</h2>
+                                        {/* Mobile Back Button (Level 2 -> Level 1) */}
+                                        <button
+                                            onClick={() => setSelectedKeyword(null)}
+                                            className="md:hidden p-1 -ml-1 text-zinc-400 hover:text-white"
+                                        >
+                                            <ArrowLeft className="w-5 h-5" />
+                                        </button>
+                                        <MessageSquare className="w-4 h-4 text-violet-400 hidden md:block" />
+                                        <h2 className="text-sm font-bold text-white tracking-tight truncate max-w-[200px]">Mentions for "{selectedKeyword}"</h2>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <button
                                             onClick={() => handleMarkRead(selectedKeyword)}
-                                            className="text-[10px] uppercase font-bold text-emerald-400 hover:text-emerald-300 transition-colors bg-emerald-400/5 border border-emerald-400/10 px-3 py-1.5 rounded-lg"
+                                            className="text-[10px] uppercase font-bold text-emerald-400 hover:text-emerald-300 transition-colors bg-emerald-400/5 border border-emerald-400/10 px-3 py-1.5 rounded-lg whitespace-nowrap"
                                         >
-                                            Mark All Read
+                                            Mark Read
                                         </button>
-                                        <button onClick={() => setSelectedKeyword(null)} className="p-1.5 text-zinc-500 hover:text-white transition-colors">
+                                        <button onClick={() => setSelectedKeyword(null)} className="hidden md:block p-1.5 text-zinc-500 hover:text-white transition-colors">
                                             <X className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* Results View */}
-                                <div className="flex-1 flex overflow-hidden">
-                                    {/* Matches List */}
-                                    <div className={`flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar border-r border-white/5 transition-all duration-300 ${selectedContext ? 'w-1/2 shrink-0' : 'w-full'}`}>
+                                <div className="flex-1 flex overflow-hidden relative">
+                                    {/* Matches List (Level 2) - Hidden on Mobile if Context (Level 3) is Open */}
+                                    <div className={`
+                                        flex-1 overflow-y-auto p-4 md:p-6 space-y-4 no-scrollbar border-r border-white/5 transition-all duration-300 bg-[#050505]
+                                        ${selectedContext ? 'hidden md:block w-1/2 shrink-0' : 'w-full'}
+                                    `}>
                                         {loadingMatches ? (
                                             <div className="flex items-center justify-center py-20 opacity-30">
                                                 <Loader2 className="w-6 h-6 animate-spin" />
@@ -287,7 +335,8 @@ export default function KeywordsPage() {
                                             matches.map((match) => (
                                                 <div
                                                     key={match.post_id}
-                                                    className={`group p-4 bg-[#0A0A0B] border rounded-xl transition-all ${selectedContext?.post_id === match.post_id ? 'border-violet-500/50 bg-violet-500/5' : 'border-white/5 hover:border-white/10'}`}
+                                                    className={`group p-4 bg-[#0A0A0B] border rounded-xl transition-all cursor-pointer ${selectedContext?.post_id === match.post_id ? 'border-violet-500/50 bg-violet-500/5' : 'border-white/5 hover:border-white/10'}`}
+                                                    onClick={() => setSelectedContext({ board: match.board, thread_id: match.thread_id, post_id: match.post_id })}
                                                 >
                                                     <div className="flex items-center justify-between mb-3">
                                                         <div className="flex items-center gap-2">
@@ -295,7 +344,6 @@ export default function KeywordsPage() {
                                                             <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">{new Date(match.found_at * 1000).toLocaleDateString()}</span>
                                                         </div>
                                                         <button
-                                                            onClick={() => setSelectedContext({ board: match.board, thread_id: match.thread_id, post_id: match.post_id })}
                                                             className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-violet-400 hover:text-violet-300 transition-colors opacity-0 group-hover:opacity-100"
                                                         >
                                                             <ExternalLink className="w-3 h-3" />
@@ -308,15 +356,29 @@ export default function KeywordsPage() {
                                         )}
                                     </div>
 
-                                    {/* Context View Side Panel */}
+                                    {/* Context View Side Panel (Level 3) */}
                                     {selectedContext && (
-                                        <div className="w-1/2 flex flex-col bg-[#050505] animate-in slide-in-from-right duration-300">
+                                        <div className={`
+                                            flex-col bg-[#050505] animate-in slide-in-from-right duration-300
+                                            fixed inset-0 z-30 w-full md:static md:w-1/2 md:flex md:z-auto
+                                        `}>
+                                            <div className="md:hidden flex items-center justify-between p-4 border-b border-white/5 bg-[#0A0A0B]">
+                                                <button
+                                                    onClick={() => setSelectedContext(null)}
+                                                    className="flex items-center gap-2 text-zinc-400 hover:text-white"
+                                                >
+                                                    <ArrowLeft className="w-4 h-4" />
+                                                    <span className="text-xs font-bold uppercase tracking-widest">Back to Matches</span>
+                                                </button>
+                                            </div>
+
                                             {isPro ? (
                                                 <ThreadDetailView
                                                     board={selectedContext.board}
                                                     threadId={selectedContext.thread_id}
                                                     highlightPostId={selectedContext.post_id}
                                                     onClose={() => setSelectedContext(null)}
+                                                    className="h-full"
                                                 />
                                             ) : (
                                                 <div className="flex-1 flex items-center justify-center p-8 text-center bg-[#050505]">
@@ -336,7 +398,7 @@ export default function KeywordsPage() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="flex-1 flex flex-col items-center justify-center text-center opacity-20 p-10">
+                            <div className="flex-1 flex flex-col items-center justify-center text-center opacity-20 p-10 hidden md:flex">
                                 <Bell className="w-16 h-16 mb-4 text-zinc-700" />
                                 <h3 className="text-xl font-bold text-white mb-2 underline decoration-violet-500/50 underline-offset-8">Discovery Pulse</h3>
                                 <p className="text-sm max-w-xs">Select a keyword to see specific mentions and explore the full discussion context.</p>

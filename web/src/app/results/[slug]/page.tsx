@@ -57,8 +57,22 @@ export default function ResultsPage() {
     const [saving, setSaving] = useState(false);
     const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
 
+    // Mobile Responsive State
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [showMobileDetail, setShowMobileDetail] = useState(false);
+
+    // Auto-open detail on desktop, but maybe not on mobile initially?
+    // Actually, separating "selection" from "view" is good.
+    // When a user clicks a list item -> set selectedId AND setShowMobileDetail(true).
+
+    const handleOpportunityClick = (id: number) => {
+        setSelectedId(id);
+        setShowMobileDetail(true);
+    };
+
     useEffect(() => {
         const init = async () => {
+
             try {
                 setLoading(true);
                 const resolvedBoards = await resolveSlugToBoards(slug);
@@ -178,25 +192,46 @@ export default function ResultsPage() {
 
     return (
         <div className="min-h-screen flex bg-[#050505] text-zinc-300 font-sans selection:bg-white/10">
+            {/* Desktop Sidebar */}
             <Sidebar />
+
+            {/* Mobile Sidebar Overlay */}
+            {isMobileMenuOpen && (
+                <div className="fixed inset-0 z-50 flex md:hidden">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
+                    <div className="relative w-20 bg-[#050505] border-r border-white/10 h-full">
+                        <Sidebar className="!flex !static h-full" />
+                    </div>
+                </div>
+            )}
 
             <div className="flex-1 flex flex-col h-screen overflow-hidden">
                 {/* Top Navigation & Stats Combined */}
-                <header className="sticky top-0 z-20 bg-[#050505]/95 backdrop-blur-md border-b border-white/5 px-8 pt-6 pb-6 shadow-sm">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-6">
-                            <Link href="/boards" className="p-2 -ml-2 hover:bg-white/5 rounded-lg transition-colors text-zinc-500 hover:text-white">
+                <header className="shrink-0 z-20 bg-[#050505]/95 backdrop-blur-md border-b border-white/5 px-4 md:px-8 py-4 md:py-6 shadow-sm overflow-hidden">
+                    <div className="flex items-center justify-between mb-4 md:mb-6 gap-4">
+                        <div className="flex items-center gap-4 md:gap-6 overflow-hidden">
+                            {/* Mobile Hamburger */}
+                            <button
+                                onClick={() => setIsMobileMenuOpen(true)}
+                                className="md:hidden p-1 -ml-1 text-zinc-400 hover:text-white shrink-0"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" x2="21" y1="6" y2="6" /><line x1="3" x2="21" y1="12" y2="12" /><line x1="3" x2="21" y1="18" y2="18" /></svg>
+                            </button>
+
+                            <Link href="/boards" className="hidden md:block p-2 -ml-2 hover:bg-white/5 rounded-lg transition-colors text-zinc-500 hover:text-white">
                                 <ArrowLeft className="w-5 h-5" />
                             </Link>
-                            <div className="h-4 w-px bg-white/10" />
-                            <div className="flex items-center gap-4">
-                                <h1 className="text-2xl font-bold text-white tracking-tight">
+
+                            <div className="hidden md:block h-4 w-px bg-white/10" />
+
+                            <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
+                                <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight truncate">
                                     {decodedSlug.startsWith('/') ? decodedSlug : `/${decodedSlug}/`}
                                 </h1>
                                 {boards.length > 1 && (
-                                    <div className="flex items-center gap-1.5">
+                                    <div className="hidden sm:flex items-center gap-1.5 overflow-x-auto no-scrollbar">
                                         {boards.slice(0, 3).map(b => (
-                                            <span key={b} className="px-2 py-0.5 bg-zinc-900 border border-white/10 rounded text-[10px] font-mono text-zinc-400">
+                                            <span key={b} className="px-2 py-0.5 bg-zinc-900 border border-white/10 rounded text-[10px] font-mono text-zinc-400 whitespace-nowrap">
                                                 /{b}/
                                             </span>
                                         ))}
@@ -204,35 +239,42 @@ export default function ResultsPage() {
                                 )}
                             </div>
                         </div>
+
+                        {/* Mobile: Back to Boards if in list view, or context action */}
+                        {!showMobileDetail && (
+                            <Link href="/boards" className="md:hidden text-xs font-bold text-zinc-500 hover:text-zinc-300">
+                                Exit
+                            </Link>
+                        )}
                     </div>
 
-                    {/* Stats Row */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-12">
+                    {/* Stats Row - Scrollable on mobile */}
+                    <div className="flex items-center justify-between gap-8 overflow-x-auto no-scrollbar pb-1">
+                        <div className="flex items-center gap-8 md:gap-12 shrink-0">
                             <div className="flex flex-col">
                                 <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-0.5">Threads</span>
-                                <span className="text-xl font-bold text-white leading-none">{stats?.threads?.toLocaleString() || 0}</span>
+                                <span className="text-lg md:text-xl font-bold text-white leading-none">{stats?.threads?.toLocaleString() || 0}</span>
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-0.5">Replies</span>
-                                <span className="text-xl font-bold text-white leading-none">{stats?.replies?.toLocaleString() || 0}</span>
+                                <span className="text-lg md:text-xl font-bold text-white leading-none">{stats?.replies?.toLocaleString() || 0}</span>
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-0.5">Avg Replies</span>
-                                <span className="text-xl font-bold text-white leading-none">
+                                <span className="text-lg md:text-xl font-bold text-white leading-none">
                                     {stats?.threads ? Math.round(stats.replies / stats.threads) : 0}
                                 </span>
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-0.5">24h Growth</span>
-                                <span className={`text-xl font-bold leading-none ${stats?.growth > 0 ? 'text-emerald-400' : 'text-zinc-500'}`}>
+                                <span className={`text-lg md:text-xl font-bold leading-none ${stats?.growth > 0 ? 'text-emerald-400' : 'text-zinc-500'}`}>
                                     {stats?.growth > 0 ? '+' : ''}{stats?.growth || 0}%
                                 </span>
                             </div>
                         </div>
 
                         {/* Trending Pills */}
-                        <div className="flex items-center gap-3">
+                        <div className="hidden md:flex items-center gap-3 shrink-0">
                             <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mr-2">Trending:</span>
                             {stats?.trending_keywords && stats.trending_keywords.slice(0, 5).map((k: string) => (
                                 <span key={k} className="px-2.5 py-1 bg-zinc-900 border border-white/10 rounded text-[10px] font-bold text-zinc-400 uppercase tracking-wider whitespace-nowrap">
@@ -245,20 +287,24 @@ export default function ResultsPage() {
 
                 <main className="flex-1 flex overflow-hidden">
 
-                    {/* Left Column: Unified View - Wider */}
-                    <section className="w-[500px] border-r border-white/5 flex flex-col h-full bg-[#050505] shrink-0">
+                    {/* Left Column: List Layout */}
+                    {/* On Mobile: Hidden if Detail is Open */}
+                    <section className={`
+                        w-full md:w-[500px] border-r border-white/5 flex flex-col h-full bg-[#050505] shrink-0 transition-all
+                        ${showMobileDetail ? 'hidden md:flex' : 'flex'}
+                    `}>
                         {/* Header & Filters */}
-                        <div className="px-6 py-4 flex items-center justify-between gap-4 bg-[#050505]/90 backdrop-blur z-10 sticky top-0 border-b border-white/5">
+                        <div className="px-4 md:px-6 py-4 flex items-center justify-between gap-4 bg-[#050505]/90 backdrop-blur z-10 sticky top-0 border-b border-white/5">
                             <div className="flex-1 flex gap-2 overflow-x-auto no-scrollbar items-center">
                                 <span className="text-[10px] uppercase font-black tracking-widest text-zinc-500 mr-2 shrink-0">Discoveries</span>
                                 {isPro ? (
                                     <>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs text-zinc-500 font-medium">Score:</span>
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <span className="hidden sm:inline text-xs text-zinc-500 font-medium">Score:</span>
                                             <FilterDropdown
                                                 value={activeScore}
                                                 onChange={(val: number | null) => setActiveScore(val)}
-                                                placeholder="Any"
+                                                placeholder="Score"
                                                 options={[
                                                     { label: 'Any', value: null },
                                                     { label: '7+', value: 7 },
@@ -266,12 +312,12 @@ export default function ResultsPage() {
                                                 ]}
                                             />
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs text-zinc-500 font-medium">Intent:</span>
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <span className="hidden sm:inline text-xs text-zinc-500 font-medium">Intent:</span>
                                             <FilterDropdown
                                                 value={activeIntent}
                                                 onChange={(val: string | null) => setActiveIntent(val)}
-                                                placeholder="Any"
+                                                placeholder="Intent"
                                                 options={[
                                                     { label: 'Any', value: null },
                                                     { label: 'Core Pains & Anger', value: 'Core Pains & Anger' },
@@ -281,12 +327,12 @@ export default function ResultsPage() {
                                                 ]}
                                             />
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs text-zinc-500 font-medium">Complexity:</span>
+                                        {/* Hidden on mobile to save space, or make scrollable */}
+                                        <div className="flex items-center gap-2 shrink-0">
                                             <FilterDropdown
                                                 value={activeComplexity}
                                                 onChange={(val: string | null) => setActiveComplexity(val)}
-                                                placeholder="Any"
+                                                placeholder="Complexity"
                                                 options={[
                                                     { label: 'Any', value: null },
                                                     { label: 'Low', value: 'Low' },
@@ -295,25 +341,11 @@ export default function ResultsPage() {
                                                 ]}
                                             />
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs text-zinc-500 font-medium">Size:</span>
-                                            <FilterDropdown
-                                                value={activeSize}
-                                                onChange={(val: string | null) => setActiveSize(val)}
-                                                placeholder="Any"
-                                                options={[
-                                                    { label: 'Any', value: null },
-                                                    { label: 'Niche', value: 'Niche' },
-                                                    { label: 'Mid-size', value: 'Mid-size' },
-                                                    { label: 'Mass Market', value: 'Mass Market' }
-                                                ]}
-                                            />
-                                        </div>
                                     </>
                                 ) : (
-                                    <div className="flex items-center gap-4 text-zinc-600 text-[10px] uppercase font-bold tracking-widest pl-4 border-l border-white/5 opacity-50 cursor-not-allowed">
+                                    <div className="flex items-center gap-4 text-zinc-600 text-[10px] uppercase font-bold tracking-widest pl-4 border-l border-white/5 opacity-50 cursor-not-allowed whitespace-nowrap">
                                         <Lock className="w-3 h-3" />
-                                        <span>Advanced Filters Locked</span>
+                                        <span>Filters Locked</span>
                                     </div>
                                 )}
                             </div>
@@ -325,7 +357,7 @@ export default function ResultsPage() {
                             {(isPro ? opportunities : opportunities.slice(0, 3)).map((opp) => (
                                 <button
                                     key={opp.id}
-                                    onClick={() => setSelectedId(opp.id)}
+                                    onClick={() => handleOpportunityClick(opp.id)}
                                     className={`w-full text-left px-6 py-4 border-b transition-all duration-200 group ${selectedId === opp.id
                                         ? 'bg-white/5 border-white/10'
                                         : 'border-white/5 hover:bg-white/[0.02]'
@@ -351,7 +383,7 @@ export default function ResultsPage() {
                             {/* Locked State for Free Users */}
                             {!isPro && opportunities.length >= 3 && (
                                 <div className="mt-8 mb-12">
-                                    <UpgradePrompt description="Upgrade to Pro to unlock all 50+ opportunities matching this trend." />
+                                    <UpgradePrompt description="Upgrade to Pro to unlock all results." />
                                 </div>
                             )}
 
@@ -364,9 +396,22 @@ export default function ResultsPage() {
                     </section>
 
                     {/* Right Column: Detail View */}
-                    <section className="flex-1 overflow-y-auto p-12 no-scrollbar bg-[#080808]">
+                    {/* On Mobile: Show ONLY if Detail is Open */}
+                    <section className={`
+                        flex-1 overflow-y-auto p-6 md:p-12 no-scrollbar bg-[#080808]
+                        ${showMobileDetail ? 'flex' : 'hidden md:flex'}
+                    `}>
                         {selectedOpportunity ? (
-                            <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="w-full max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+                                {/* Mobile Back Button */}
+                                <button
+                                    onClick={() => setShowMobileDetail(false)}
+                                    className="md:hidden mb-6 flex items-center gap-2 text-zinc-500 hover:text-white transition-colors"
+                                >
+                                    <ArrowLeft className="w-4 h-4" />
+                                    <span className="text-xs font-bold uppercase tracking-widest">Back to List</span>
+                                </button>
 
                                 {/* Header */}
                                 <div className="mb-12">
@@ -394,16 +439,16 @@ export default function ResultsPage() {
                                             ) : (
                                                 <Bookmark className={`w-3 h-3 ${savedIds.has(selectedOpportunity.id) ? 'fill-current' : ''}`} />
                                             )}
-                                            {savedIds.has(selectedOpportunity.id) ? 'Saved' : 'Save Insight'}
+                                            {savedIds.has(selectedOpportunity.id) ? 'Saved' : 'Save'}
                                         </button>
                                     </div>
 
-                                    <h2 className="text-5xl font-bold text-white tracking-tighter mb-10 leading-[1.1]">
+                                    <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tighter mb-10 leading-[1.1]">
                                         {selectedOpportunity.product_concept || selectedOpportunity.core_pain || selectedOpportunity.emerging_trend}
                                     </h2>
 
                                     {/* Metric Cards */}
-                                    <div className="grid grid-cols-4 gap-4">
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                         <div className="p-4 rounded-lg bg-[#0F0F10] border border-white/5">
                                             <div className="text-[9px] uppercase font-black tracking-widest text-zinc-600 mb-1">Signal Strength</div>
                                             <div className="text-white font-bold text-lg">{selectedOpportunity.market_score}/10</div>

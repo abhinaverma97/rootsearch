@@ -52,8 +52,8 @@ export default function SearchPreview() {
     ];
 
     return (
-        <section id="search" className="py-32 px-6 border-b border-white/5 bg-[#080808] overflow-hidden relative">
-            <div className="max-w-[1600px] mx-auto grid lg:grid-cols-2 gap-20 items-center">
+        <section id="search" className="py-20 md:py-32 px-6 border-b border-white/5 bg-[#080808] overflow-hidden relative">
+            <div className="max-w-[1600px] mx-auto grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
                 {/* Left: Content */}
                 <div className="relative z-10">
@@ -151,7 +151,7 @@ export default function SearchPreview() {
                     </div>
 
                     {/* Floating Badge */}
-                    <div className="absolute -bottom-8 -left-8 bg-[#111] border border-white/10 p-4 rounded-xl shadow-xl flex items-center gap-4 transition-all">
+                    <div className="absolute -bottom-8 -left-8 bg-[#111] border border-white/10 p-4 rounded-xl shadow-xl hidden md:flex items-center gap-4 transition-all">
                         <div className="flex flex-col">
                             <span className="text-[10px] uppercase font-bold text-zinc-500">Processed Today</span>
                             <span className="text-xl font-bold text-white font-mono">1.4M Posts</span>

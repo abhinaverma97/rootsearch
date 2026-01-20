@@ -70,7 +70,7 @@ export default function BoardsPreview() {
             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-violet-500/5 rounded-full blur-[120px] pointer-events-none opacity-20" />
 
             <div className="max-w-[1600px] mx-auto relative z-10">
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-6">
                     <div>
                         <div className="flex items-center gap-2 mb-3">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -86,7 +86,7 @@ export default function BoardsPreview() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
                     {boards.map((cat, idx) => (
                         <div key={idx} className="pointer-events-none select-none">
                             <BoardCard
